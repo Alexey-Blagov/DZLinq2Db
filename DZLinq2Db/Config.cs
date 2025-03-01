@@ -17,7 +17,7 @@ namespace DZLinq2Db
             }
             public Config()
             {
-                _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "userPass.json");
+                _filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PassToken.json");
                 try
                 {
                     LoadFromJson();

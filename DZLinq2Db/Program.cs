@@ -11,6 +11,8 @@
     {
         static void Main(string[] args)
         {
+            var db = new LinqToDbRepository();
+            var list = LinqToDbRepository.GetCustomer(); 
             Console.WriteLine("Hello, World!");
 
         }

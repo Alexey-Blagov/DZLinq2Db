@@ -7,7 +7,7 @@ public class Customer
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public int Age { get; set; }
-    public List<Product> Products { get; set; }
+    public List<Product> Products { get; set; } = new List<Product>(); 
 }
 //--Products(ID, Name, Description, StockQuantity, Price)
 //CREATE TABLE Products (

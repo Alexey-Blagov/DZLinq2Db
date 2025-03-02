@@ -1,13 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LinqToDB.Mapping;
 
+[Table(Name = "customers")] 
 public class Customer
 {
-    [Key]
-    public int ID { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    [PrimaryKey, Identity]
+    [Column(Name = "id")]
+    public int Id { get; set; }
+    [Column(Name = "firstname"), NotNull]
+    public string? FirstName { get; set; }
+    [Column(Name = "lastname"), NotNull]
+    public string? LastName { get; set; }
+    [Column(Name = "age")]
     public int Age { get; set; }
-    public List<Product> Products { get; set; } = new List<Product>(); 
 }
 //--Products(ID, Name, Description, StockQuantity, Price)
 //CREATE TABLE Products (

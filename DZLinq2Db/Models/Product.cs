@@ -1,12 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-
+﻿using LinqToDB.Mapping;
+[Table(Name = "products")]
 public class Product
 {
-    [Key]
-    public int ID { get; set; }
+    [PrimaryKey, Identity]
+    [Column(Name = "id")]
+    public int Id { get; set; }
+    [Column(Name = "name"), NotNull]
     public string Name { get; set; }
+    [Column(Name = "description"), NotNull]
     public string Description { get; set; }
+    [Column(Name = "stockquantity")]
     public int StockQuantity { get; set; }
+    [Column(Name = "price")]
     public decimal Price { get; set; }
 
 }

@@ -148,9 +148,14 @@ namespace DZLinq2Db
                     // Освобождаем управляемые ресурсы
                     _db?.Dispose();
                 }
-
                 _disposed = true;
             }
+        }
+        // Финализатор (на случай, если Dispose не был вызван явно) подсмотрел в ИИ как это делается!!!
+        // Тогда можно не вызывать метод Dispose и Using 
+        ~LinqToDbRepository()
+        {
+            Dispose(false);
         }
     }
 

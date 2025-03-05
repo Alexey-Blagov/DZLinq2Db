@@ -8,24 +8,24 @@ namespace DZLinq2Db
     /// <summary>
     /// Класс подключения к БД Linq2Db. 
     /// </summary>
-    public class LinqToDbRepository
+    public class LinqToDbRepository: IDisposable
     {
-        private static DataConnection? _db;
-        private static Config _config = new Config();
-        private static string _database = _config.BdToken;
+        private DataConnection _db;
+        private Config _config;
         public LinqToDbRepository()
         {
-            _db = new DataConnection(ProviderName.PostgreSQL, _database);
+            _config = new Config();
+            _db = new DataConnection(ProviderName.PostgreSQL, _config.BdToken); 
         }
 
-        public static List<Customer> GetCustomer()
+        public List<Customer> GetCustomer()
         {
-            return _db!.GetTable<Customer>()
+            return _db.GetTable<Customer>()
                 .ToList();
         }
-        public static int? GetCustomerId(string firstName, string lastName)
+        public  int? GetCustomerId(string firstName, string lastName)
         {
-            var customers = _db!.GetTable<Customer>()
+            var customers = _db.GetTable<Customer>()
            .Where(o => o.FirstName == firstName && o.LastName == lastName)
            .ToList();
             if (customers.Count == 0)
@@ -39,16 +39,16 @@ namespace DZLinq2Db
             }
             return customers[0].Id;
         }
-        public static void GetPriceMaxMinValue()
+        public void GetPriceMaxMinValue()
         {
-            var products = _db!.GetTable<Product>()
+            var products = _db.GetTable<Product>()
                 .OrderBy(p => p.Price)
                 .ToList();
             Console.WriteLine($"Минимальная цена товара {products[0].Name},  {products[0].Price} руб.  максимальная ценa  {products[products.Count - 1].Name}, d {products[products.Count - 1].Price} руб.");
         }
-        public static void GetProductPrice(decimal maxPrice)
+        public void GetProductPrice(decimal maxPrice)
         {
-            var products = _db!.GetTable<Product>()
+            var products = _db.GetTable<Product>()
                 .Where(p => p.Price <= maxPrice)
                 .ToList();
             foreach (var product in products)
@@ -56,26 +56,26 @@ namespace DZLinq2Db
                 Console.WriteLine($"ID: {product.Id}, Наименование: {product.Name} Описание: {product.Description} цена  {product.Price} руб. Доступное количество {product.StockQuantity}  ");
             }
         }
-        public static void GetProductList ()
+        public void GetProductList ()
         {
-            var products = _db!.GetTable<Product>()
+            var products = _db.GetTable<Product>()
                 .ToList();
             foreach (var product in products)
             {
                 Console.WriteLine($"ID: {product.Id}, Наименование: {product.Name} Описание: {product.Description} цена  {product.Price} руб. Доступное количество {product.StockQuantity}  ");
             }
         }
-        public static void SetBuyChoiceProduct(int idcustomer, int idProducttoBuy, int productQuontity)
+        public void SetBuyChoiceProduct(int idcustomer, int idProducttoBuy, int productQuontity)
         {
-            var Customer = _db!.GetTable<Customer>().
+            var Customer = _db.GetTable<Customer>().
                 FirstOrDefault(p => p.Id == idcustomer);
             if (Customer is null)
             {
                 Console.WriteLine($"Пользователя с таким ID не существует, зарегестрируйте пользователя");
                 return; 
             }
-            var Orders = _db!.GetTable<Order>();
-            var Product = _db!.GetTable<Product>()
+            var Orders = _db.GetTable<Order>();
+            var Product = _db.GetTable<Product>()
                 .FirstOrDefault(p => p.Id == idProducttoBuy);
             if (Product != null)
             {
@@ -87,9 +87,9 @@ namespace DZLinq2Db
                 {
                     //Оформляем покупку 
                     var order = new Order() { CustomerID = idcustomer, ProductID = idProducttoBuy, Quantity = productQuontity };
-                    _db!.Insert(order);
+                    _db.Insert(order);
                     Product.StockQuantity -= productQuontity;
-                    _db!.Update(Product);  
+                    _db.Update(Product);  
                 }
             }
             else
@@ -104,11 +104,11 @@ namespace DZLinq2Db
         /// </summary>
         /// <param name="id"></param> продукта по базе 
         /// <param name="age"></param> возраст покупателя 
-        public static void GetCustomersByBelow30andBuyId1(int id, int age)
+        public void GetCustomersByBelow30andBuyId1(int id, int age)
         {
-            var Customers = _db!.GetTable<Customer>();
-            var Orders = _db!.GetTable<Order>();
-            var Products = _db!.GetTable<Product>();
+            var Customers = _db.GetTable<Customer>();
+            var Orders = _db.GetTable<Order>();
+            var Products = _db.GetTable<Product>();
             var results = from c in Customers
                           join o in Orders on c.Id equals o.CustomerID
                           join p in Products on o.ProductID equals p.Id
@@ -129,6 +129,11 @@ namespace DZLinq2Db
                 Console.WriteLine($"ID: {res.CustomerID}, Фамилия: {res.LastName} Имя: {res.FirstName} \n  " +
                                   $"Id Продукта  {res.ProductID} Доступное количество {res.ProductQuantity} Цена продуката {res.ProductPrice} руб. ");
             }
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 

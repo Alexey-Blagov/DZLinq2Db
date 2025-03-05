@@ -15,81 +15,81 @@ namespace DZLinq2Db
         static Config _config = new Config();
         static void Main(string[] args)
         {
-            var db = new LinqToDbRepository();
-
-            var customer = new Customer() { Age = 19, FirstName = "Алексaндр", LastName = "Сергеев" };
-            int id = 1;
-            //Определиться с ORM: Dapper (Linq2Db) выбрана Linq2Db строка подключения к БД и добавление в нее данных 
-            //Добавляем Customer 
-            using (var conn = new DataConnection(ProviderName.PostgreSQL, _config.BdToken))
-            {
-                conn.Insert(customer);
-            }
-
-            //Вывод данных по ФИО из репозитория полуычения Id этого пользователя 
-            var customerId = LinqToDbRepository.GetCustomerId(customer.FirstName, customer.LastName);
-
-            //Удаление данных из таблицы Customers
-            try
-            {
+          
+                var customer = new Customer() { Age = 19, FirstName = "Алексaндр", LastName = "Сергеев" };
+                int id = 1;
+                //Определиться с ORM: Dapper (Linq2Db) выбрана Linq2Db строка подключения к БД и добавление в нее данных 
+                //Добавляем Customer 
                 using (var conn = new DataConnection(ProviderName.PostgreSQL, _config.BdToken))
                 {
-                    //Получаем по id юзера по id 
-                    var customerbyId = conn.GetTable<Customer>().FirstOrDefault(c => c.Id == customerId);
-                    if (customerbyId != null)
-                    {
-                        conn.Delete(customerbyId);
-                        Console.WriteLine($"Пользователь ID c {customerId} удален");
-                    }
-                    else throw new ArgumentNullException("Не найдено такого покупателя");
+                    conn.Insert(customer);  
                 }
-            }
-            catch (Exception ex)
+            using (var db = new LinqToDbRepository())
             {
-                Console.WriteLine(ex.Message);
-            }
+                //Вывод данных по ФИО из репозитория полуычения Id этого пользователя 
+                var customerId = db.GetCustomerId(customer.FirstName, customer.LastName);
 
-            //Выводим данные по максильаной и минимальной цене товара в БД
-            LinqToDbRepository.GetPriceMaxMinValue();
-            var price = 0m;
-            var idcustomer = 0;
-            var idProduct = 0; 
-            var productQuontity = 0;
-            Console.WriteLine("Введите приемлемую цену товара");
-            while (!decimal.TryParse(Console.ReadLine(), out price))
-            {
-                Console.WriteLine("Не правильный ввод данных попрбуйте еще раз"); 
-            }
-            //Вывод списка товаров 
-            LinqToDbRepository.GetProductPrice(price);
+                //Удаление данных из таблицы Customers
+                try
+                {
+                    using (var conn = new DataConnection(ProviderName.PostgreSQL, _config.BdToken))
+                    {
+                        //Получаем по id юзера по id 
+                        var customerbyId = conn.GetTable<Customer>().FirstOrDefault(c => c.Id == customerId);
+                        if (customerbyId != null)
+                        {
+                            conn.Delete(customerbyId);
+                            Console.WriteLine($"Пользователь ID c {customerId} удален");
+                        }
+                        else throw new ArgumentNullException("Не найдено такого покупателя");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
 
-            Console.WriteLine(); 
-            Console.WriteLine("Введите Id пользователя для покупки");
-            while (!int.TryParse(Console.ReadLine(), out idcustomer))
-            {
-                Console.WriteLine("Не правильный ввод данных попрбуйте еще раз");
+                //Выводим данные по максильаной и минимальной цене товара в БД
+                db.GetPriceMaxMinValue();
+                var price = 0m;
+                var idcustomer = 0;
+                var idProduct = 0;
+                var productQuontity = 0;
+                Console.WriteLine("Введите приемлемую цену товара");
+                while (!decimal.TryParse(Console.ReadLine(), out price))
+                {
+                    Console.WriteLine("Не правильный ввод данных попрбуйте еще раз");
+                }
+                //Вывод списка товаров 
+                db.GetProductPrice(price);
+
+                Console.WriteLine();
+                Console.WriteLine("Введите Id пользователя для покупки");
+                while (!int.TryParse(Console.ReadLine(), out idcustomer))
+                {
+                    Console.WriteLine("Не правильный ввод данных попрбуйте еще раз");
+                }
+                Console.WriteLine();
+                Console.WriteLine("Введите Id товара");
+                while (!int.TryParse(Console.ReadLine(), out idProduct))
+                {
+                    Console.WriteLine("Не правильный ввод данных попрбуйте еще раз");
+                }
+                Console.WriteLine();
+                Console.WriteLine("Введите количество товара");
+                while (!int.TryParse(Console.ReadLine(), out productQuontity))
+                {
+                    Console.WriteLine("Не правильный ввод данных попрбуйте еще раз");
+                }
+                //Нинициируем покупку 
+                db.SetBuyChoiceProduct(idcustomer, idProduct, productQuontity);
+                db.GetProductList();
+                Console.WriteLine();
+                Task.Delay(3000);
+                // Написать запрос, который возвращает список всех пользователей старше 30 лет, у которых есть заказ на продукт с ID=1.
+                // В результате должны получить таблицу:CustomerID, FirstName, LastName, ProductID, ProductQuantity, ProductPrice 
+                db.GetCustomersByBelow30andBuyId1(1, 30);
             }
-            Console.WriteLine();
-            Console.WriteLine("Введите Id товара");
-            while (!int.TryParse(Console.ReadLine(), out idProduct))
-            {
-                Console.WriteLine("Не правильный ввод данных попрбуйте еще раз");
-            }
-            Console.WriteLine();
-            Console.WriteLine("Введите количество товара");
-            while (!int.TryParse(Console.ReadLine(), out productQuontity))
-            {
-                Console.WriteLine("Не правильный ввод данных попрбуйте еще раз");
-            }
-            //Нинициируем покупку 
-            LinqToDbRepository.SetBuyChoiceProduct(idcustomer, idProduct, productQuontity);
-            LinqToDbRepository.GetProductList(); 
-            Console.WriteLine();    
-            Task.Delay(3000); 
-            // Написать запрос, который возвращает список всех пользователей старше 30 лет, у которых есть заказ на продукт с ID=1.
-            // В результате должны получить таблицу:CustomerID, FirstName, LastName, ProductID, ProductQuantity, ProductPrice 
-            LinqToDbRepository.GetCustomersByBelow30andBuyId1(1, 30);
         }
-
     }
 }

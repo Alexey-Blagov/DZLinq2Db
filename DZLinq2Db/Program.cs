@@ -24,6 +24,7 @@ namespace DZLinq2Db
                 {
                     conn.Insert(customer);  
                 }
+                //Создаем класс с автореализацией IDispose 
             using (var db = new LinqToDbRepository())
             {
                 //Вывод данных по ФИО из репозитория полуычения Id этого пользователя 

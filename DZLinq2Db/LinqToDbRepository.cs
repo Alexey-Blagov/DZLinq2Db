@@ -8,7 +8,7 @@ namespace DZLinq2Db
     /// <summary>
     /// Класс подключения к БД Linq2Db. 
     /// </summary>
-    public class LinqToDbRepository: IDisposable
+    public class LinqToDbRepository 
     {
         private DataConnection _db;
         private Config _config;
@@ -129,11 +129,6 @@ namespace DZLinq2Db
                 Console.WriteLine($"ID: {res.CustomerID}, Фамилия: {res.LastName} Имя: {res.FirstName} \n  " +
                                   $"Id Продукта  {res.ProductID} Доступное количество {res.ProductQuantity} Цена продуката {res.ProductPrice} руб. ");
             }
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 

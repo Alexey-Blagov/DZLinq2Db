@@ -8,10 +8,11 @@ namespace DZLinq2Db
     /// <summary>
     /// Класс подключения к БД Linq2Db. 
     /// </summary>
-    public class LinqToDbRepository 
+    public class LinqToDbRepository:IDisposable 
     {
         private DataConnection _db;
         private Config _config;
+        private bool _disposed = false;
         public LinqToDbRepository()
         {
             _config = new Config();
@@ -128,6 +129,27 @@ namespace DZLinq2Db
             {
                 Console.WriteLine($"ID: {res.CustomerID}, Фамилия: {res.LastName} Имя: {res.FirstName} \n  " +
                                   $"Id Продукта  {res.ProductID} Доступное количество {res.ProductQuantity} Цена продуката {res.ProductPrice} руб. ");
+            }
+        }
+        /// <summary>
+        /// Реализация IDisposable интерфейса 
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // Освобождаем управляемые ресурсы
+                    _db?.Dispose();
+                }
+
+                _disposed = true;
             }
         }
     }
